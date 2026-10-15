@@ -9,6 +9,7 @@
   --nav-bg:rgba(255,255,255,.78);
   --good:#12925a; --warn:#b26b00; --bad:#cc3344;
   --shadow:0 1px 2px rgba(13,15,18,.04),0 8px 24px -12px rgba(13,15,18,.12);
+  --glow:rgba(10,127,194,.1); --spot:rgba(10,127,194,.07); --spot-edge:rgba(10,127,194,.55);
   --f-body:"IBM Plex Sans Thai","Noto Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --r-lg:18px; --r-md:12px; --r-sm:9px;
@@ -21,6 +22,7 @@
   --nav-bg:rgba(15,17,20,.72);
   --good:#3ed598; --warn:#f2b54b; --bad:#ff6b7a;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 32px -16px rgba(0,0,0,.6);
+  --glow:rgba(140,200,255,.1); --spot:rgba(255,255,255,.1); --spot-edge:rgba(255,255,255,.6);
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0b0c0e; --surface:#131518; --surface-2:#1a1d21; --fg:#f2f4f7; --muted:#9aa2ae; --faint:#6b7380;
@@ -30,6 +32,7 @@
   --nav-bg:rgba(15,17,20,.72);
   --good:#3ed598; --warn:#f2b54b; --bad:#ff6b7a;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 32px -16px rgba(0,0,0,.6);
+  --glow:rgba(140,200,255,.1); --spot:rgba(255,255,255,.1); --spot-edge:rgba(255,255,255,.6);
   color-scheme:dark}
 
 *,*::before,*::after{box-sizing:border-box}
@@ -47,7 +50,7 @@ p{margin:0}
 .muted{color:var(--muted)}
 .mnav{display:none}
 
-#app{position:relative}
+#app{position:relative;z-index:1}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:clamp(16px,4vw,32px)}
 
 /* surfaces: solid, no blur (blur is expensive on long pages) */
@@ -383,3 +386,12 @@ textarea.inp.code{font-family:var(--f-mono);font-size:13px;min-height:200px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
 }
+
+/* ---------- cursor light (desktop only; set up in js/app.js → spotlight) ---------- */
+#cursor-glow{position:fixed;left:0;top:0;width:720px;height:720px;margin:-360px 0 0 -360px;border-radius:50%;background:radial-gradient(circle,var(--glow) 0%,transparent 62%);pointer-events:none;z-index:0;opacity:0;transition:opacity .5s;will-change:transform}
+#cursor-glow.on{opacity:1}
+.card,.cattile,.glass,.search,.fact{position:relative}
+.card::after,.cattile::after,.glass::after,.search::after,.fact::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%),var(--spot),transparent 65%);opacity:0;transition:opacity .3s;pointer-events:none;z-index:1}
+.card::before,.cattile::before,.glass::before,.search::before,.fact::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),var(--spot-edge),transparent 70%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s;pointer-events:none;z-index:2}
+.lit::after,.lit::before{opacity:1}
+@media (hover:none),(pointer:coarse){#cursor-glow{display:none}.card::before,.card::after,.cattile::before,.cattile::after,.glass::before,.glass::after,.search::before,.search::after,.fact::before,.fact::after{display:none}}

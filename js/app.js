@@ -836,6 +836,29 @@ const field = {
   recolor() {}
 };
 
+/* ====== cursor light: the area under the mouse glows a little brighter ====== */
+function spotlight() {
+  if (!window.matchMedia || !matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  const SEL = ".card, .cattile, .glass, .search, .fact";
+  const glow = document.createElement("div"); glow.id = "cursor-glow"; glow.setAttribute("aria-hidden", "true");
+  document.body.prepend(glow);
+  let x = 0, y = 0, raf = 0, cur = null;
+  const paint = () => {
+    raf = 0;
+    glow.style.transform = "translate3d(" + x + "px," + y + "px,0)";
+    if (cur && cur.isConnected) { const r = cur.getBoundingClientRect(); cur.style.setProperty("--mx", (x - r.left) + "px"); cur.style.setProperty("--my", (y - r.top) + "px"); }
+  };
+  addEventListener("pointermove", (e) => {
+    if (e.pointerType !== "mouse") return;
+    x = e.clientX; y = e.clientY;
+    glow.classList.add("on");
+    const t = e.target && e.target.closest ? e.target.closest(SEL) : null;
+    if (t !== cur) { if (cur) cur.classList.remove("lit"); cur = t; if (cur) cur.classList.add("lit"); }
+    if (!raf) raf = requestAnimationFrame(paint);
+  }, { passive: true });
+  document.documentElement.addEventListener("mouseleave", () => { glow.classList.remove("on"); if (cur) { cur.classList.remove("lit"); cur = null; } });
+}
+
 /* ====== intro (short, CSS-only) ====== */
 function intro() {
   if (reduced || store.get("ngj-intro", true) || /^#work\//.test(location.hash)) return;
@@ -866,6 +889,7 @@ function boot() {
   const mr = document.createElement("div"); mr.id = "modal-root"; document.body.appendChild(mr);
   const tr = document.createElement("div"); tr.id = "toasts"; tr.setAttribute("role", "status"); tr.setAttribute("aria-live", "polite"); document.body.appendChild(tr);
   field.mount();
+  spotlight();
   const h = (location.hash || "").slice(1);
   if (/^work\//.test(h)) { S.route = "works"; render(); }
   route();
