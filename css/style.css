@@ -108,7 +108,7 @@ main{padding-block:8px 72px}
 
 /* ---------- hero ---------- */
 .hero{text-align:center;padding-block:clamp(48px,9vw,104px) 8px;display:flex;flex-direction:column;align-items:center}
-.hlogo{width:72px;height:72px;border-radius:50%;margin-bottom:28px;box-shadow:0 0 0 1px var(--line),0 10px 40px -12px var(--accent)}
+.hlogo{width:clamp(96px,12vw,128px);height:auto;aspect-ratio:1;border-radius:50%;margin-bottom:24px;box-shadow:0 0 0 1px var(--line),0 10px 40px -12px var(--accent)}
 .hero h1{font-size:clamp(40px,8.6vw,104px);line-height:1;letter-spacing:-.03em;margin-top:18px}
 .hero h1 .l1{font-weight:700}
 .hero h1 .l2{font-weight:300;color:var(--muted)}

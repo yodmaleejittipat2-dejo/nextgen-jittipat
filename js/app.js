@@ -24,7 +24,7 @@ function ago(iso) {
   return Math.floor(s / 86400) + " วันที่แล้ว";
 }
 const reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-const DEFAULT_LOGO = "assets/logo.webp";
+const DEFAULT_LOGO = "assets/logo.webp?v=2";
 
 /* ====== icons ====== */
 const ic = (p) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + "</svg>";
@@ -202,7 +202,7 @@ function homeHtml() {
   const facts = '<span class="fact"><b>' + works.length + "</b> ผลงาน</span>" +
     SITE.categories.slice(0, 3).map((c) => '<span class="fact"><i class="fdot" style="--h:' + c.hue + '"></i><b>' + countIn(c.id) + "</b> " + esc(c.name) + "</span>").join("");
   return '<section class="hero reveal">' +
-      '<img class="hlogo" src="' + esc(logoUrl()) + '" alt="โลโก้ ' + esc(SITE.settings.name) + '" width="72" height="72">' +
+      '<img class="hlogo" src="' + esc(logoUrl()) + '" alt="โลโก้ ' + esc(SITE.settings.name) + '" width="128" height="128">' +
       '<div class="eyebrow">' + esc(SITE.settings.eyebrow) + "</div>" +
       '<h1><span class="l1">' + esc(np[0].toUpperCase()) + '</span> <span class="l2">' + esc(np[1]) + "</span></h1>" +
       '<p class="lead">' + esc(SITE.settings.tagline) + "</p>" +
