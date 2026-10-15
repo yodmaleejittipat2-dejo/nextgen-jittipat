@@ -144,8 +144,7 @@ function toggleTheme() {
   const next = effTheme() === "dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", next); store.set("ngj-theme", next);
   const b = $('[data-a="theme"]'); if (b) b.innerHTML = next === "dark" ? I.sun : I.moon;
-  field.recolor();
-}
+  }
 
 /* ====== toasts, confirm, modal ====== */
 function toast(msg, kind) {
@@ -186,7 +185,7 @@ function navHtml() {
 function cardHtml(w, i) {
   const k = KIND[w.kind] || KIND.link;
   const playable = w.kind === "video" || w.kind === "youtube" || w.kind === "tiktok";
-  return '<a class="card glass reveal" href="#work/' + esc(w.id) + '" data-a="open" data-id="' + esc(w.id) + '" style="--h:' + catHue(w.cat) + ";animation-delay:" + Math.min(i * 50, 500) + 'ms;text-decoration:none">' +
+  return '<a class="card reveal" href="#work/' + esc(w.id) + '" data-a="open" data-id="' + esc(w.id) + '" style="--h:' + catHue(w.cat) + ";animation-delay:" + Math.min(i * 40, 240) + 'ms;text-decoration:none">' +
     '<div class="thumb">' + coverFor(w) + '<span class="badge">' + esc(k.badge) + "</span>" + (playable ? '<span class="playdot">' + I.play + "</span>" : "") + "</div>" +
     '<div class="cbody"><h3>' + esc(w.title) + '</h3><div class="cmeta"><i class="dot"></i><span>' + esc(catName(w.cat)) + "</span>" + (w.year ? '<span class="mono">' + esc(w.year) + "</span>" : "") + "</div></div></a>";
 }
@@ -200,20 +199,21 @@ function emptyHtml(msg) {
 function homeHtml() {
   const np = nameParts(), works = sortedWorks();
   let feat = works.filter((w) => w.featured); if (!feat.length) feat = works; feat = feat.slice(0, 6);
-  const stats = '<div class="stat glass"><b class="mono">' + works.length + "</b><span>ผลงานทั้งหมด</span></div>" +
-    SITE.categories.slice(0, 3).map((c) => '<div class="stat glass"><b class="mono" style="color:hsl(' + c.hue + ' 85% 55%)">' + countIn(c.id) + "</b><span>" + esc(c.name) + "</span></div>").join("");
-  return '<section class="hero">' +
-      '<div class="reveal"><div class="eyebrow">' + esc(SITE.settings.eyebrow) + "</div>" +
-      '<h1><span class="l1">' + esc(np[0].toUpperCase()) + '</span><span class="l2">' + esc(np[1]) + "</span></h1>" +
+  const facts = '<span class="fact"><b>' + works.length + "</b> ผลงาน</span>" +
+    SITE.categories.slice(0, 3).map((c) => '<span class="fact"><i class="fdot" style="--h:' + c.hue + '"></i><b>' + countIn(c.id) + "</b> " + esc(c.name) + "</span>").join("");
+  return '<section class="hero reveal">' +
+      '<img class="hlogo" src="' + esc(logoUrl()) + '" alt="โลโก้ ' + esc(SITE.settings.name) + '" width="72" height="72">' +
+      '<div class="eyebrow">' + esc(SITE.settings.eyebrow) + "</div>" +
+      '<h1><span class="l1">' + esc(np[0].toUpperCase()) + '</span> <span class="l2">' + esc(np[1]) + "</span></h1>" +
       '<p class="lead">' + esc(SITE.settings.tagline) + "</p>" +
-      '<div class="ctas"><a class="btn pri" href="#works">' + I.grid + 'ดูผลงานทั้งหมด</a><a class="btn" href="#about">' + I.user + "เกี่ยวกับฉัน</a></div></div>" +
-      '<div class="orbit reveal" style="animation-delay:.15s"><div class="ring r2"><i></i></div><div class="ring"><i></i></div><div class="core">' + imgTag(logoUrl(), "โลโก้ " + SITE.settings.name) + "</div></div>" +
-    '</section><div class="statrow">' + stats + "</div>" +
-    '<section class="section"><div class="sec-head"><div><div class="eyebrow">Featured</div><h2>ผลงานเด่น</h2></div><a class="btn sm" href="#works">ดูทั้งหมด</a></div>' +
+      '<div class="ctas"><a class="btn pri" href="#works">ดูผลงานทั้งหมด <span aria-hidden="true">→</span></a><a class="btn" href="#about">เกี่ยวกับฉัน</a></div>' +
+      '<div class="facts">' + facts + "</div>" +
+    "</section>" +
+    '<section class="section"><div class="sec-head"><div><div class="eyebrow">Featured</div><h2>ผลงานเด่น</h2></div><a class="link" href="#works">ดูทั้งหมด →</a></div>' +
       (feat.length ? '<div class="grid">' + feat.map(cardHtml).join("") + "</div>" : emptyHtml("ยังไม่มีผลงาน")) + "</section>" +
     '<section class="section"><div class="sec-head"><div><div class="eyebrow">Categories</div><h2>หมวดหมู่ผลงาน</h2></div></div>' +
       '<div class="cattiles">' + SITE.categories.map((c) =>
-        '<button class="cattile glass" data-a="gocat" data-id="' + esc(c.id) + '" style="--h:' + c.hue + '"><span class="gl">' + (CAT_GLYPH[c.kind] || I.spark) + "</span><div><h3>" + esc(c.name) + '</h3><span class="cnt">' + countIn(c.id) + " ผลงาน</span></div></button>").join("") + "</div></section>";
+        '<button class="cattile" data-a="gocat" data-id="' + esc(c.id) + '" style="--h:' + c.hue + '"><span class="gl">' + (CAT_GLYPH[c.kind] || I.spark) + "</span><h3>" + esc(c.name) + '</h3><span class="cnt">' + countIn(c.id) + ' ผลงาน <span aria-hidden="true">→</span></span></button>').join("") + "</div></section>";
 }
 function filteredWorks() {
   const q = S.q.trim().toLowerCase();
@@ -828,71 +828,24 @@ document.addEventListener("submit", async (e) => {
   if (ev === "drop" && e.dataTransfer && e.dataTransfer.files.length) handleFiles(d.getAttribute("for"), e.dataTransfer.files);
 }));
 
-/* ====== background circuit field ====== */
-const field = (() => {
-  const cv = document.createElement("canvas"), ctx = cv.getContext("2d"); let traces = [], pulses = [], col = {}, raf = 0, last = 0, W = 0, H = 0;
-  const readCol = () => { const cs = getComputedStyle(document.documentElement); col.trace = cs.getPropertyValue("--trace").trim() || "rgba(70,170,255,.12)"; col.pulse = cs.getPropertyValue("--pulse").trim() || "#3fd5ff"; };
-  function build() {
-    const dpr = Math.min(2, window.devicePixelRatio || 1); W = innerWidth; H = innerHeight;
-    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const g = 44, n = Math.round((W * H) / 26000); traces = [];
-    let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-    for (let i = 0; i < n; i++) {
-      let x = Math.round(rnd() * W / g) * g, y = Math.round(rnd() * H / g) * g, dir = rnd() < 0.5 ? 0 : 1; const pts = [[x, y]];
-      for (let s = 0; s < 3 + rnd() * 4; s++) {
-        const len = (1 + Math.floor(rnd() * 4)) * g, sg = rnd() < 0.5 ? -1 : 1;
-        if (dir === 0) x += len * sg; else y += len * sg;
-        if (rnd() < 0.35) { if (dir === 0) y += g * sg; else x += g * sg; }
-        pts.push([x, y]); dir = 1 - dir;
-      }
-      let L = 0; for (let k = 1; k < pts.length; k++) L += Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]);
-      traces.push({ pts, len: L });
-    }
-    pulses = traces.filter((_, i) => i % 3 === 0).map((t, i) => ({ t, p: (i * 0.37) % 1, v: 0.0009 + (i % 5) * 0.0003 }));
-  }
-  function at(tr, d) {
-    for (let k = 1; k < tr.pts.length; k++) { const a = tr.pts[k - 1], b = tr.pts[k], l = Math.hypot(b[0] - a[0], b[1] - a[1]); if (d <= l) { const f = l ? d / l : 0; return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]; } d -= l; }
-    return tr.pts[tr.pts.length - 1];
-  }
-  function draw() {
-    ctx.clearRect(0, 0, W, H); ctx.lineWidth = 1.2; ctx.strokeStyle = col.trace;
-    traces.forEach((tr) => { ctx.beginPath(); tr.pts.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.stroke(); const e = tr.pts[tr.pts.length - 1]; ctx.beginPath(); ctx.arc(e[0], e[1], 3, 0, 7); ctx.stroke(); });
-    ctx.fillStyle = col.pulse; ctx.shadowColor = col.pulse; ctx.shadowBlur = 10;
-    pulses.forEach((p) => { const q = at(p.t, p.p * p.t.len); ctx.beginPath(); ctx.arc(q[0], q[1], 1.8, 0, 7); ctx.fill(); });
-    ctx.shadowBlur = 0;
-  }
-  function loop(ts) { raf = requestAnimationFrame(loop); if (ts - last < 40) return; const dt = Math.min(80, ts - last); last = ts; pulses.forEach((p) => { p.p = (p.p + p.v * dt / 16) % 1; }); draw(); }
-  return {
-    mount() {
-      const host = document.createElement("div"); host.id = "bgfield"; host.innerHTML = '<div class="orb a"></div><div class="orb b"></div>';
-      host.appendChild(cv); document.body.insertBefore(host, document.body.firstChild);
-      readCol(); build(); draw(); if (!reduced) raf = requestAnimationFrame(loop);
-      let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { build(); draw(); }, 200); });
-      document.addEventListener("visibilitychange", () => { if (document.hidden) cancelAnimationFrame(raf); else if (!reduced) { last = 0; raf = requestAnimationFrame(loop); } });
-      try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { field.recolor(); const b = $('[data-a="theme"]'); if (b) b.innerHTML = effTheme() === "dark" ? I.sun : I.moon; }); } catch (e) {}
-    },
-    recolor() { readCol(); draw(); }
-  };
-})();
+/* ====== theme watcher (no background animation: keeps the page light) ====== */
+const field = {
+  mount() {
+    try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { const b = $('[data-a="theme"]'); if (b) b.innerHTML = effTheme() === "dark" ? I.sun : I.moon; }); } catch (e) {}
+  },
+  recolor() {}
+};
 
-/* ====== intro ====== */
+/* ====== intro (short, CSS-only) ====== */
 function intro() {
   if (reduced || store.get("ngj-intro", true) || /^#work\//.test(location.hash)) return;
   store.set("ngj-intro", "1", true);
   const np = nameParts();
-  const letters = (s, d0) => s.split("").map((ch, i) => '<span style="animation-delay:' + (d0 + i * 0.06).toFixed(2) + 's">' + (ch === " " ? "&nbsp;" : esc(ch)) + "</span>").join("");
-  const paths = ["M50 50 H18 V30 H-10", "M50 50 H82 V22 H112", "M50 50 V86 H30 V112", "M50 50 V14 H64 V-12", "M50 50 H-6 V64 H-30", "M50 50 H100 V74 H128", "M50 50 V108 H76 V122", "M50 50 V-4 H36 V-24"];
-  const svg = '<svg class="traces" viewBox="-40 -40 180 180" preserveAspectRatio="xMidYMid meet">' + paths.map((d, i) => '<path d="' + d + '" style="animation-delay:' + (i * 0.07).toFixed(2) + 's"/>').join("") + "</svg>";
   const el = document.createElement("div"); el.id = "intro"; el.setAttribute("aria-hidden", "true");
-  el.innerHTML = '<div class="stage">' + svg + '<div class="ring"></div><div class="lg"><img src="' + esc(logoUrl()) + '" alt=""></div>' +
-    '<div class="word"><div class="w1">' + letters(np[0].toUpperCase(), 0.7) + '</div><div class="w2">' + letters(np[1].toUpperCase(), 0.95) + "</div></div></div>" +
-    '<div class="load"><div class="t"><i></i></div><div class="r"><span>INITIALIZING SHOWCASE</span><span id="pct">0%</span></div></div>';
+  el.innerHTML = '<div class="ib"><img src="' + esc(logoUrl()) + '" alt=""><div class="iw"><b>' + esc(np[0].toUpperCase()) + "</b> " + esc(np[1]) + '</div><i class="iline"></i></div>';
   document.body.appendChild(el);
-  $$("path", el).forEach((p) => { try { const l = p.getTotalLength(); p.style.setProperty("--len", l); const pt = p.getPointAtLength(l); const c = document.createElementNS("http://www.w3.org/2000/svg", "circle"); c.setAttribute("cx", pt.x); c.setAttribute("cy", pt.y); c.setAttribute("r", 1.8); c.style.animationDelay = (parseFloat(p.style.animationDelay) + 1.1) + "s"; p.parentNode.appendChild(c); } catch (err) {} });
-  const t0 = performance.now(), pct = $("#pct", el);
-  (function tick() { const k = Math.min(1, (performance.now() - t0) / 2100); if (pct) pct.textContent = Math.round(100 * (1 - Math.pow(1 - k, 3))) + "%"; if (k < 1 && el.isConnected) requestAnimationFrame(tick); })();
-  const done = () => { if (el.classList.contains("out")) return; el.classList.add("out"); setTimeout(() => el.remove(), 950); };
-  el.addEventListener("click", done); setTimeout(done, 2700);
+  const done = () => { if (el.classList.contains("out")) return; el.classList.add("out"); setTimeout(() => el.remove(), 500); };
+  el.addEventListener("click", done); setTimeout(done, 1300);
 }
 
 /* ====== boot ====== */
