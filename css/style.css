@@ -289,7 +289,7 @@ textarea.inp.code{font-family:var(--f-mono);font-size:13px;min-height:200px}
 .panel + .panel{margin-top:12px}
 .panel h2{font-size:19px}
 .panel .ph{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-@media (max-width:860px){.admin{grid-template-columns:1fr}.aside{position:static;display:flex;overflow-x:auto}.aside button{white-space:nowrap}.aside hr{display:none}}
+@media (max-width:860px){.admin{grid-template-columns:1fr}.aside{position:relative;top:auto;display:flex;overflow-x:auto}.aside button{white-space:nowrap}.aside hr{display:none}}
 
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:12px}
 .kpi{padding:16px 18px;border-radius:var(--r-md)}
@@ -390,8 +390,97 @@ textarea.inp.code{font-family:var(--f-mono);font-size:13px;min-height:200px}
 /* ---------- cursor light (desktop only; set up in js/app.js → spotlight) ---------- */
 #cursor-glow{position:fixed;left:0;top:0;width:720px;height:720px;margin:-360px 0 0 -360px;border-radius:50%;background:radial-gradient(circle,var(--glow) 0%,transparent 62%);pointer-events:none;z-index:0;opacity:0;transition:opacity .5s;will-change:transform}
 #cursor-glow.on{opacity:1}
-.card,.cattile,.glass,.search,.fact{position:relative}
+:where(.card,.cattile,.glass,.search,.fact){position:relative}
 .card::after,.cattile::after,.glass::after,.search::after,.fact::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%),var(--spot),transparent 65%);opacity:0;transition:opacity .3s;pointer-events:none;z-index:1}
 .card::before,.cattile::before,.glass::before,.search::before,.fact::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),var(--spot-edge),transparent 70%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s;pointer-events:none;z-index:2}
 .lit::after,.lit::before{opacity:1}
 @media (hover:none),(pointer:coarse){#cursor-glow{display:none}.card::before,.card::after,.cattile::before,.cattile::after,.glass::before,.glass::after,.search::before,.search::after,.fact::before,.fact::after{display:none}}
+
+/* =====================================================================
+   Phone layout (≤720px): bigger touch targets, full-screen sheets,
+   single-row scrolling filters, two-up category tiles.
+   ===================================================================== */
+@media (hover:none){
+  .card:hover,.cattile:hover{transform:none}
+  .card:active,.cattile:active{transform:scale(.985)}
+  .card:hover .thumb img{transform:none}
+}
+@media (max-width:720px){
+  body{font-size:15.5px;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  main{padding-block:4px 40px}
+  .nav{padding-block:8px}
+  .nav-in{padding:6px 6px 6px 10px}
+  .brand b{font-size:13px;letter-spacing:.1em}
+  .iconbtn{width:40px;height:40px}
+  .mnav a{padding:11px 6px;font-size:14.5px}
+
+  /* inputs at 16px stop iOS from zooming in on focus */
+  .inp,.search input{font-size:16px}
+
+  /* home */
+  .hero{padding-block:28px 0}
+  .hlogo{width:96px;margin-bottom:18px}
+  .hero h1{margin-top:12px}
+  .hero .lead{margin-top:16px;font-size:15.5px}
+  .hero .ctas{margin-top:22px;width:100%}
+  .hero .ctas .btn{flex:1 1 0;min-width:0;padding-block:12px}
+  .facts{margin-top:24px}
+  .section{margin-top:52px}
+  .sec-head{margin-bottom:16px}
+  .cattiles{grid-template-columns:1fr 1fr;gap:10px}
+  .cattile{padding:16px}
+  .cattile .gl{width:36px;height:36px;margin-bottom:8px}
+  .cattile h3{font-size:15.5px}
+  .grid{gap:12px}
+
+  /* works: search on top, filters in one swipeable row */
+  .toolbar{flex-direction:column-reverse;align-items:stretch;gap:12px;margin-bottom:16px}
+  .search{flex:1 1 auto;padding:10px 16px}
+  .toolbar .chips{flex-wrap:nowrap;overflow-x:auto;min-width:0;width:calc(100% + 2 * clamp(16px,4vw,32px));max-width:none;margin-inline:calc(-1 * clamp(16px,4vw,32px));padding-inline:clamp(16px,4vw,32px);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .toolbar .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;padding:8px 14px}
+
+  /* about */
+  .about{padding-top:16px;gap:12px}
+  .profile{padding:24px 18px}
+  .avatar{width:112px;height:112px}
+  .apanel{padding:20px}
+  .contact{padding:11px 12px}
+
+  /* work viewer and editor become full-screen sheets */
+  .modal{padding:0;place-items:stretch}
+  .mbox,.mbox[style]{width:100%!important;max-height:none;height:100%;height:100dvh;border-radius:0;border:0;animation:sheet .28s ease-out;overscroll-behavior:contain}
+  .mbox.narrow{height:auto;align-self:end;border-radius:18px 18px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .mhead{position:sticky;top:0;z-index:5;background:var(--surface);padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px 16px;border-bottom:1px solid var(--line)}
+  .mhead .btn.sm{padding:8px 12px}
+  .mmedia{padding:12px 12px 0}
+  .mcontent{padding:16px 16px calc(96px + env(safe-area-inset-bottom,0px));gap:18px}
+  .mnavbtn{width:48px;height:48px;bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+  .embed.v{height:min(640px,72vh)}
+  #workf{padding:16px 16px calc(24px + env(safe-area-inset-bottom,0px))!important}
+  #workf > div:last-child{position:sticky;bottom:0;background:var(--surface);margin-inline:-16px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+  #workf > div:last-child .btn{flex:1}
+
+  /* admin */
+  .login{margin-top:24px;padding:24px 20px}
+  .admin{padding-top:8px;gap:10px}
+  .aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 68px);z-index:30;padding:5px;gap:4px;border-radius:999px;scrollbar-width:none}
+  .aside::-webkit-scrollbar{display:none}
+  .aside button{padding:9px 14px;border-radius:999px;flex:none}
+  .aside button:hover{background:none;color:var(--muted)}
+  .aside button.on{background:var(--inv-bg);color:var(--inv-fg)}
+  .abar{padding:10px 12px;margin-bottom:10px}
+  .abar .status{font-size:13px}
+  .panel{padding:16px}
+  .kpis{grid-template-columns:1fr 1fr;gap:10px}
+  .kpis .kpi:first-child{grid-column:1/-1}
+  .kpi{padding:14px}
+  .kpi b{font-size:26px}
+  .chartwrap svg{min-width:0}
+  .xbtn{width:40px;height:40px}
+  .li .th{width:72px}
+  .seg button{padding:9px 13px}
+  .switch{font-size:15px}
+  #toasts{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+}
+@keyframes sheet{from{transform:translateY(24px);opacity:.4}}

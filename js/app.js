@@ -423,13 +423,14 @@ function lineChart(days) {
   const n = 14, pts = [], d = new Date(); d.setDate(d.getDate() - (n - 1));
   for (let i = 0; i < n; i++) { const k = dkey(d); pts.push({ lbl: d.getDate() + "/" + (d.getMonth() + 1), v: days[k] || 0 }); d.setDate(d.getDate() + 1); }
   const max = Math.max(...pts.map((p) => p.v)), step = max <= 4 ? 1 : Math.ceil(max / 4), top = Math.max(4, step * 4);
-  const W = 640, H = 220, L = 36, R = 14, T = 14, B = 30, iw = W - L - R, ih = H - T - B;
+  const narrow = window.innerWidth < 600;
+  const W = narrow ? 360 : 640, H = narrow ? 230 : 220, L = 30, R = 12, T = 14, B = 30, iw = W - L - R, ih = H - T - B;
   const x = (i) => L + i * iw / (n - 1), y = (v) => T + ih - v / top * ih;
   let grid = "";
   for (let g = 0; g <= 4; g++) { const gv = step * g, gy = y(gv); grid += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + gy + '" y2="' + gy + '" style="stroke:var(--line)" stroke-width="1"/><text x="' + (L - 8) + '" y="' + (gy + 4) + '" text-anchor="end" style="fill:var(--faint);font:11px var(--f-mono)">' + gv + "</text>"; }
   const line = pts.map((p, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p.v).toFixed(1)).join(" ");
   const area = line + " L" + x(n - 1) + " " + (T + ih) + " L" + L + " " + (T + ih) + " Z";
-  const labels = pts.map((p, i) => (i % 2 === 0 || i === n - 1) ? '<text x="' + x(i) + '" y="' + (H - 8) + '" text-anchor="middle" style="fill:var(--faint);font:11px var(--f-mono)">' + p.lbl + "</text>" : "").join("");
+  const labels = pts.map((p, i) => ((narrow ? (n - 1 - i) % 3 === 0 : i % 2 === 0) || i === n - 1) ? '<text x="' + x(i) + '" y="' + (H - 8) + '" text-anchor="middle" style="fill:var(--faint);font:11px var(--f-mono)">' + p.lbl + "</text>" : "").join("");
   const dots = pts.map((p, i) => '<circle cx="' + x(i) + '" cy="' + y(p.v) + '" r="' + (i === n - 1 ? 5 : 2.5) + '" style="fill:' + (i === n - 1 ? "var(--accent)" : "var(--bg)") + ';stroke:var(--accent)" stroke-width="2"><title>' + p.lbl + ": " + p.v + " ครั้ง</title></circle>").join("");
   return '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="กราฟการเข้าชม 14 วัน"><defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--accent);stop-opacity:.35"/><stop offset="1" style="stop-color:var(--accent);stop-opacity:0"/></linearGradient></defs>' +
     grid + '<path d="' + area + '" fill="url(#ag)"/><path d="' + line + '" fill="none" style="stroke:var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>' + dots + labels +
@@ -651,6 +652,8 @@ function render() {
   else view = S.route === "works" ? worksHtml() : S.route === "about" ? aboutHtml() : S.route === "admin" ? adminHtml() : homeHtml();
   if (!api.configured && S.route === "home") view = setupHtml() + view;
   app.innerHTML = navHtml() + '<main class="wrap">' + view + "</main>" + footerHtml();
+  const tab = $(".aside button.on"), bar = tab && tab.parentElement;
+  if (bar && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = tab.offsetLeft - (bar.clientWidth - tab.offsetWidth) / 2;
 }
 const ROUTES = ["home", "works", "about", "admin"];
 function route(fromClick) {
